@@ -1,0 +1,17 @@
+---
+- name: Install requirements
+  package:
+    name: "{{ locale_requirements }}"
+    state: present
+  register: locale_install_requirements
+  until: locale_install_requirements is succeeded
+  retries: 3
+
+- name: Configure locale.conf
+  template:
+    src: locale.conf.j2
+    dest: "{{ locale_configuration_file }}"
+
+- name: Configure keymap
+  command: localectl set-keymap "{{ keymap_vc_keymap }}"
+  changed_when: false

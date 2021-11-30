@@ -1,0 +1,4 @@
+packages:
+- kubelet={{ kube_package_version }}-00
+- kubeadm={{ kube_package_version }}-00
+- kubectl={{ kube_package_version }}-00

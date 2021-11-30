@@ -1,0 +1,23 @@
+---
+- hosts: kube-cluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - { role: ntp, tags: ntp }
+    - { role: locale, tags: locale }
+    - { role: containerd, tags: containerd }
+    - { role: commons/os-checker, tags: commons }
+    - { role: commons/pre-install, tags: commons }
+
+- hosts: master
+  gather_facts: yes
+  become: yes
+  roles:
+    - { role: kubernetes/master, tags: master }
+    - { role: cni, tags: cni }
+
+- hosts: worker
+  gather_facts: yes
+  become: yes
+  roles:
+    - { role: kubernetes/node, tags: node }

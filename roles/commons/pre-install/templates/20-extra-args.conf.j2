@@ -1,0 +1,2 @@
+[Service]
+Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false --node-ip={{ ansible_eth1.ipv4.address }}"

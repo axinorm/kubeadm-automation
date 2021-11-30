@@ -1,0 +1,53 @@
+---
+- name: Install package
+  apt:
+    name: containerd
+    state: present
+    update_cache: yes
+
+- name: Configure /etc/modules-load.d/containerd.conf
+  blockinfile:
+    path: /etc/modules-load.d/containerd.conf
+    create: yes
+    block: |
+      overlay
+      br_netfilter
+
+- name: "Add modules"
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: "Set sysctl parameters"
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_set: yes
+    state: present
+    reload: yes
+  with_items:
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-ip6tables
+
+- name: Create a directory
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: 0755
+  
+- name: Generate default configuration
+  shell: containerd config default > /etc/containerd/config.toml
+  args:
+    creates: /etc/containerd/config.toml
+  notify: Restart containerd
+
+- name: Enable containerd
+  systemd:
+    name: containerd
+    state: started
+    enabled: yes
+...
