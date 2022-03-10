@@ -41,7 +41,7 @@ Vagrant.configure("2") do |config|
     ansible.groups = {  
       "master" => ["k8s-master"],
       "worker" => ["k8s-worker[1:3]"],
-      "kube-cluster:children" => ["master", "worker"]
+      "kube_cluster:children" => ["master", "worker"]
     }
   end
 end
