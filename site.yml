@@ -1,12 +1,13 @@
 ---
-- hosts: kube-cluster
+- hosts: kube_cluster
   gather_facts: yes
   become: yes
   roles:
+    - { role: commons/os-checker, tags: commons }
+    - { role: commons/package-update, tags: commons }
     - { role: ntp, tags: ntp }
     - { role: locale, tags: locale }
     - { role: containerd, tags: containerd }
-    - { role: commons/os-checker, tags: commons }
     - { role: commons/pre-install, tags: commons }
 
 - hosts: master
