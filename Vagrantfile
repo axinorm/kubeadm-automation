@@ -9,6 +9,8 @@ CPU = 2
 WORKER_NB = 1
 # Prefix pour la plage d'adresses IP à utiliser
 NODE_NETWORK_BASE = "10.0.0"
+# Master IP
+MASTER_IP = "#{NODE_NETWORK_BASE}.10"
 
 Vagrant.configure("2") do |config|
   config.ssh.insert_key = true
@@ -23,7 +25,7 @@ Vagrant.configure("2") do |config|
   # Configuration du Master
   config.vm.define "k8s-master" do |master|
     master.vm.box = IMAGE_NAME
-    master.vm.network "private_network", ip: "#{NODE_NETWORK_BASE}.10"
+    master.vm.network "private_network", ip: MASTER_IP
     master.vm.hostname = "k8s-master"
   end
 
@@ -40,8 +42,9 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "site.yml"
     ansible.groups = {  
       "master" => ["k8s-master"],
-      "worker" => ["k8s-worker[1:3]"],
-      "kube_cluster:children" => ["master", "worker"]
+      "worker" => ["k8s-worker[1:#{WORKER_NB}]"],
+      "kube_cluster:children" => ["master", "worker"],
+      "kube_cluster:vars" => { "master_ip" => MASTER_IP }
     }
   end
 end
